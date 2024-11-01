@@ -32,17 +32,20 @@ def sample_combatants(sample_combatant1, sample_combatant2):
 # Add Meal Management Test Cases
 ##################################################
 
-def test_add_song_to_playlist(playlist_model, sample_song1):
-    """Test adding a song to the playlist."""
-    playlist_model.add_song_to_playlist(sample_song1)
-    assert len(playlist_model.playlist) == 1
-    assert playlist_model.playlist[0].title == 'Song 1'
+def test_add_meal_to_combatants(kitchen_model, sample_meal1):
+    ######################## DONE ########################
+    """Test adding a meal to the combatants list."""
+    kitchen_model.prep_combatant(sample_meal1)
+    assert len(kitchen_model.combatants) == 1
+    assert kitchen_model.combatants[0].meal == 'Meal 1'
 
-def test_add_duplicate_song_to_playlist(playlist_model, sample_song1):
-    """Test error when adding a duplicate song to the playlist by ID."""
-    playlist_model.add_song_to_playlist(sample_song1)
-    with pytest.raises(ValueError, match="Song with ID 1 already exists in the playlist"):
-        playlist_model.add_song_to_playlist(sample_song1)
+def test_add_meal_to_full_list(kitchen_model, sample_meal1):
+    ######################## FIX ########################
+    """Test error when adding a meal to a full combatants list."""
+    kitchen_model.prep_combatant(sample_meal1)
+    kitchen_model.prep_combatant(sample_meal1)
+    with pytest.raises(ValueError, match="Combatant list is full, cannot add more combatants."):
+        kitchen_model.prep_combatant(sample_meal1)
 
 ##################################################
 # Remove Meal Management Test Cases
@@ -149,18 +152,6 @@ def test_get_combatants(kitchen_model, sample_combatants):
     assert all_meals[0].id == 1
     assert all_meals[1].id == 2
 
-def test_get_song_by_song_id(playlist_model, sample_song1):
-    """Test successfully retrieving a song from the playlist by song ID."""
-    playlist_model.add_song_to_playlist(sample_song1)
-
-    retrieved_song = playlist_model.get_song_by_song_id(1)
-
-    assert retrieved_song.id == 1
-    assert retrieved_song.title == 'Song 1'
-    assert retrieved_song.artist == 'Artist 1'
-    assert retrieved_song.year == 2022
-    assert retrieved_song.duration == 180
-    assert retrieved_song.genre == 'Pop'
 
 def test_get_current_song(playlist_model, sample_playlist):
     """Test successfully retrieving the current song from the playlist."""
@@ -173,78 +164,6 @@ def test_get_current_song(playlist_model, sample_playlist):
     assert current_song.year == 2022
     assert current_song.duration == 180
     assert current_song.genre == 'Pop'
-
-def test_get_playlist_length(playlist_model, sample_playlist):
-    """Test getting the length of the playlist."""
-    playlist_model.playlist.extend(sample_playlist)
-    assert playlist_model.get_playlist_length() == 2, "Expected playlist length to be 2"
-
-def test_get_playlist_duration(playlist_model, sample_playlist):
-    """Test getting the total duration of the playlist."""
-    playlist_model.playlist.extend(sample_playlist)
-    assert playlist_model.get_playlist_duration() == 335, "Expected playlist duration to be 360 seconds"
-
-##################################################
-# Utility Function Test Cases
-##################################################
-
-def test_check_if_empty_non_empty_playlist(playlist_model, sample_song1):
-    """Test check_if_empty does not raise error if playlist is not empty."""
-    playlist_model.add_song_to_playlist(sample_song1)
-    try:
-        playlist_model.check_if_empty()
-    except ValueError:
-        pytest.fail("check_if_empty raised ValueError unexpectedly on non-empty playlist")
-
-def test_check_if_empty_empty_playlist(playlist_model):
-    """Test check_if_empty raises error when playlist is empty."""
-    playlist_model.clear_playlist()
-    with pytest.raises(ValueError, match="Playlist is empty"):
-        playlist_model.check_if_empty()
-
-def test_validate_song_id(playlist_model, sample_song1):
-    """Test validate_song_id does not raise error for valid song ID."""
-    playlist_model.add_song_to_playlist(sample_song1)
-    try:
-        playlist_model.validate_song_id(1)
-    except ValueError:
-        pytest.fail("validate_song_id raised ValueError unexpectedly for valid song ID")
-
-def test_validate_song_id_no_check_in_playlist(playlist_model):
-    """Test validate_song_id does not raise error for valid song ID when the id isn't in the playlist."""
-    try:
-        playlist_model.validate_song_id(1, check_in_playlist=False)
-    except ValueError:
-        pytest.fail("validate_song_id raised ValueError unexpectedly for valid song ID")
-
-def test_validate_song_id_invalid_id(playlist_model):
-    """Test validate_song_id raises error for invalid song ID."""
-    with pytest.raises(ValueError, match="Invalid song id: -1"):
-        playlist_model.validate_song_id(-1)
-
-    with pytest.raises(ValueError, match="Invalid song id: invalid"):
-        playlist_model.validate_song_id("invalid")
-
-def test_validate_track_number(playlist_model, sample_song1):
-    """Test validate_track_number does not raise error for valid track number."""
-    playlist_model.add_song_to_playlist(sample_song1)
-    try:
-        playlist_model.validate_track_number(1)
-    except ValueError:
-        pytest.fail("validate_track_number raised ValueError unexpectedly for valid track number")
-
-def test_validate_track_number_invalid(playlist_model, sample_song1):
-    """Test validate_track_number raises error for invalid track number."""
-    playlist_model.add_song_to_playlist(sample_song1)
-
-    with pytest.raises(ValueError, match="Invalid track number: 0"):
-        playlist_model.validate_track_number(0)
-
-    with pytest.raises(ValueError, match="Invalid track number: 2"):
-        playlist_model.validate_track_number(2)
-
-    with pytest.raises(ValueError, match="Invalid track number: invalid"):
-        playlist_model.validate_track_number("invalid")
 
 ##################################################
 # Playback Test Cases
