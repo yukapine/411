@@ -51,14 +51,6 @@ def test_add_meal_to_full_list(kitchen_model, sample_meal1):
 # Remove Meal Management Test Cases
 ##################################################
 
-def test_remove_song_from_playlist_by_song_id(playlist_model, sample_playlist):
-    """Test removing a song from the playlist by song_id."""
-    playlist_model.playlist.extend(sample_playlist)
-    assert len(playlist_model.playlist) == 2
-
-    playlist_model.remove_song_by_song_id(1)
-    assert len(playlist_model.playlist) == 1, f"Expected 1 song, but got {len(playlist_model.playlist)}"
-    assert playlist_model.playlist[0].id == 2, "Expected song with id 2 to remain"
 
 def test_delete_meal_by_meal_number(kitchen_model, sample_combatants):
     ######################## CHECK ########################
@@ -72,9 +64,9 @@ def test_delete_meal_by_meal_number(kitchen_model, sample_combatants):
     assert kitchen_model.combatants[0].id == 2, "Expected meal with id 2 to remain"
 
 def test_clear_meals(kitchen_model):
-    ######################## FIX ########################
+    ######################## CHECK ########################
     """Test clearing the entire combatant list."""
-    kitchen_model.add_song_to_playlist(sample_meal1)
+    kitchen_model.prep_combatant(sample_meal1)
     kitchen_model.clear_meals()
     assert len(kitchen_model.combatants) == 0, "combatant list should be empty after clearing"
 
@@ -85,49 +77,9 @@ def test_clear_playlist_empty_playlist(kitchen_model, caplog):
     assert len(kitchen_model.combatants) == 0, "Playlist should be empty after clearing"
     assert "Clearing an empty playlist" in caplog.text, "Expected warning message when clearing an empty playlist"
 
-##################################################
-# Tracklisting Management Test Cases
-##################################################
-
-def test_move_song_to_track_number(playlist_model, sample_playlist):
-    """Test moving a song to a specific track number in the playlist."""
-    playlist_model.playlist.extend(sample_playlist)
-
-    playlist_model.move_song_to_track_number(2, 1)  # Move Song 2 to the first position
-    assert playlist_model.playlist[0].id == 2, "Expected Song 2 to be in the first position"
-    assert playlist_model.playlist[1].id == 1, "Expected Song 1 to be in the second position"
-
-def test_swap_songs_in_playlist(playlist_model, sample_playlist):
-    """Test swapping the positions of two songs in the playlist."""
-    playlist_model.playlist.extend(sample_playlist)
-
-    playlist_model.swap_songs_in_playlist(1, 2)  # Swap positions of Song 1 and Song 2
-    assert playlist_model.playlist[0].id == 2, "Expected Song 2 to be in the first position"
-    assert playlist_model.playlist[1].id == 1, "Expected Song 1 to be in the second position"
-
-def test_swap_song_with_itself(playlist_model, sample_song1):
-    """Test swapping the position of a song with itself raises an error."""
-    playlist_model.add_song_to_playlist(sample_song1)
-
-    with pytest.raises(ValueError, match="Cannot swap a song with itself"):
-        playlist_model.swap_songs_in_playlist(1, 1)  # Swap positions of Song 1 with itself
-
-def test_move_song_to_end(playlist_model, sample_playlist):
-    """Test moving a song to the end of the playlist."""
-    playlist_model.playlist.extend(sample_playlist)
-
-    playlist_model.move_song_to_end(1)  # Move Song 1 to the end
-    assert playlist_model.playlist[1].id == 1, "Expected Song 1 to be at the end"
-
-def test_move_song_to_beginning(playlist_model, sample_playlist):
-    """Test moving a song to the beginning of the playlist."""
-    playlist_model.playlist.extend(sample_playlist)
-
-    playlist_model.move_song_to_beginning(2)  # Move Song 2 to the beginning
-    assert playlist_model.playlist[0].id == 2, "Expected Song 2 to be at the beginning"
 
 ##################################################
-# Song Retrieval Test Cases
+# Meal Retrieval Test Cases
 ##################################################
 
 def test_get_meal_by_id(kitchen_model, sample_combatants):
@@ -152,22 +104,21 @@ def test_get_combatants(kitchen_model, sample_combatants):
     assert all_meals[0].id == 1
     assert all_meals[1].id == 2
 
-
-def test_get_current_song(playlist_model, sample_playlist):
-    """Test successfully retrieving the current song from the playlist."""
-    playlist_model.playlist.extend(sample_playlist)
-
-    current_song = playlist_model.get_current_song()
-    assert current_song.id == 1
-    assert current_song.title == 'Song 1'
-    assert current_song.artist == 'Artist 1'
-    assert current_song.year == 2022
-    assert current_song.duration == 180
-    assert current_song.genre == 'Pop'
+def test_get_battle_score(kitchen_model, sample_meal):
+    ######################## CHECK ########################
+    """Test getting the battle score of a combatant."""
+    kitchen_model.combatants.extend(sample_meal)
+    assert kitchen_model.get_battle_score() == 87, "Expected battle score"
 
 ##################################################
 # Playback Test Cases
 ##################################################
+    
+
+def test_battle(kitchen_model, sample_combatants):
+    kitchen_model.combatants.extend(sample_combatants)
+    kitchen_model.battle()
+    
 
 def test_play_current_song(playlist_model, sample_playlist, mock_update_play_count):
     """Test playing the current song."""
