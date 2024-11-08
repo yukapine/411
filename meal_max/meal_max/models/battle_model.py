@@ -30,10 +30,7 @@ class BattleModel:
         Starts a battle.
 
         Side-effects:
-            Resets the current track number to 1.
-            Updates the play count for each song.
-            update_meal_stats(winner.id, 'win')
-            update_meal_stats(loser.id, 'loss')
+            Updates the meal stats for each meal.
 
         Raises:
             ValueError: If two combatants are not prepped for battle
@@ -92,7 +89,7 @@ class BattleModel:
 
     def clear_combatants(self):
         """
-        Clears all meals from the combatants list. If the combatants list is already empty, logs a warning.
+        Clears all meals from the combatants list.
         """
         logger.info("Clearing the combatants list.")
         self.combatants.clear()
