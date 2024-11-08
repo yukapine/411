@@ -19,7 +19,12 @@ RUN apt-get update && apt-get install -y sqlite3
 # Add a shell script that loads the .env file and handles database creation
 COPY ./sql/create_db.sh /app/sql/create_db.sh
 COPY ./sql/create_meal_table.sql /app/sql/create_meal_table.sql
+COPY ./entrypoint.sh /app/entrypoint.sh
+
+# Make entrypoint.sh executable
+RUN chmod +x /app/entrypoint.sh
 RUN chmod +x /app/sql/create_db.sh
+RUN chmod -R 777 /app/db
 
 # Define a volume for persisting the database
 VOLUME ["/app/db"]
