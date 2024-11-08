@@ -33,7 +33,7 @@ def sample_combatants(sample_combatant1, sample_combatant2):
 ##################################################
 
 def test_add_meal_to_combatants(kitchen_model, sample_meal1):
-    ######################## DONE ########################
+    ######################## CHECK ########################
     """Test adding a meal to the combatants list."""
     kitchen_model.prep_combatant(sample_meal1)
     assert len(kitchen_model.combatants) == 1
@@ -71,7 +71,7 @@ def test_clear_meals(kitchen_model):
     assert len(kitchen_model.combatants) == 0, "combatant list should be empty after clearing"
 
 def test_clear_playlist_empty_playlist(kitchen_model, caplog):
-    ######################## DONE ########################
+    ######################## CHECK ########################
     """Test clearing the entire combatant list when it's empty."""
     kitchen_model.clear_meals()
     assert len(kitchen_model.combatants) == 0, "Playlist should be empty after clearing"
@@ -83,7 +83,7 @@ def test_clear_playlist_empty_playlist(kitchen_model, caplog):
 ##################################################
 
 def test_get_meal_by_id(kitchen_model, sample_combatants):
-    ######################## DONE ########################
+    ######################## CHECK ########################
     """Test successfully retrieving a meal from the combatants list by meal number."""
     kitchen_model.combatants.extend(sample_combatants)
 
@@ -95,7 +95,7 @@ def test_get_meal_by_id(kitchen_model, sample_combatants):
     assert retrieved_meal.difficulty == 'LOW'
 
 def test_get_combatants(kitchen_model, sample_combatants):
-    ######################## DONE ########################
+    ######################## CHECK ########################
     """Test successfully retrieving all meals from the combatants list."""
     kitchen_model.combatants.extend(sample_combatants)
 
@@ -118,7 +118,7 @@ def test_get_battle_score(kitchen_model, sample_meal):
 def test_battle(kitchen_model, sample_combatants):
     kitchen_model.combatants.extend(sample_combatants)
     kitchen_model.battle()
-    
+
 
 def test_play_current_song(playlist_model, sample_playlist, mock_update_play_count):
     """Test playing the current song."""

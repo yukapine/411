@@ -173,6 +173,18 @@ def get_leaderboard(sort_by: str="wins") -> dict[str, Any]:
         raise e
 
 def get_meal_by_id(meal_id: int) -> Meal:
+    """
+    Retrieves a meal from the database by its meal name.
+
+    Args:
+        meal_id (int): The ID of the meal.
+
+    Returns:
+        Meal: The Meal object corresponding to the name.
+
+    Raises:
+        ValueError: If the meal is not found or is marked as deleted.
+    """
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
