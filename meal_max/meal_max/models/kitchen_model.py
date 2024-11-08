@@ -40,7 +40,7 @@ def create_meal(meal: str, cuisine: str, price: float, difficulty: str) -> None:
     Raises:
         ValueError: If the price is not a positive number.
         ValueError: If the difficulty is not 'LOW', 'MED', or 'HIGH'.
-        sqlite3.IntegrityError: If a meal with the same name already exists.
+        ValueError: If a meal with the same name already exists.
         sqlite3.Error: For any other database errors.
     """
     if not isinstance(price, (int, float)) or price <= 0:
