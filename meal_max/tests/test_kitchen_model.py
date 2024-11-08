@@ -132,6 +132,28 @@ def test_delete_meal(mock_cursor):
     assert actual_select_args == expected_args
     assert actual_update_args == expected_args
 
+def test_delete_song_bad_id(mock_cursor):
+    ######################## CHECK ########################
+    """Test error when trying to delete a non-existent song."""
+
+    # Simulate that no song exists with the given ID
+    mock_cursor.fetchone.return_value = None
+
+    # Expect a ValueError when attempting to delete a non-existent song
+    with pytest.raises(ValueError, match="Meal with ID 999 not found"):
+        delete_meal(999)
+
+def test_delete_song_already_deleted(mock_cursor):
+    ######################## CHECK ########################
+    """Test error when trying to delete a song that's already marked as deleted."""
+
+    # Simulate that the song exists but is already marked as deleted
+    mock_cursor.fetchone.return_value = ([True])
+
+    # Expect a ValueError when attempting to delete a song that's already been deleted
+    with pytest.raises(ValueError, match="Meal with ID 999 has already been deleted"):
+        delete_meal(999)
+
 ######################################################
 #
 #    Get Meal
