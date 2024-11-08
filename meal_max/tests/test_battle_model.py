@@ -96,7 +96,21 @@ def test_get_battle_score(kitchen_model, sample_meal):
 ##################################################
     
 
-def test_battle(kitchen_model, sample_combatants):
+def test_battle(kitchen_model, sample_combatants, mock_update_meal_stats):
+    ######################## CHECK ########################
+    """Test running a battle."""
     kitchen_model.combatants.extend(sample_combatants)
+
     kitchen_model.battle()
+
+    # Assert that 2 combatants are prepped for a battle.
+    assert len(kitchen_model.combatants) >= 2, f"Not enough combatants to start a battle."
+
+    # Assert that update_meal_stats was called with the id of both meals, and their result
+    mock_update_meal_stats.assert_called_once_with(1)
+    mock_update_meal_stats.assert_called_once_with(2)
+
+    # Assert that the losing combatant was removed from the list.
+    assert len(kitchen_model.combatants) == 1
+
 

@@ -43,7 +43,7 @@ def mock_cursor(mocker):
     def mock_get_db_connection():
         yield mock_conn  # Yield the mocked connection object
 
-    mocker.patch("music_collection.models.song_model.get_db_connection", mock_get_db_connection)
+    mocker.patch("meal_max.models.kitchen_model.get_db_connection", mock_get_db_connection)
 
     return mock_cursor  # Return the mock cursor so we can set expectations per test
 
@@ -82,7 +82,7 @@ def test_create_meal_duplicate(mock_cursor):
     """Test creating a meal with a duplicate name (should raise an error)."""
 
      # Simulate that the database will raise an IntegrityError due to a duplicate entry
-    mock_cursor.execute.side_effect = sqlite3.IntegrityError("UNIQUE constraint failed: meal.artist, songs.title, songs.year")
+    mock_cursor.execute.side_effect = sqlite3.IntegrityError("UNIQUE constraint failed: meals.id, meals.meal, meals.cuisine, meals.price, meals.difficulty")
 
     # Expect the function to raise a ValueError with a specific message when handling the IntegrityError
     with pytest.raises(ValueError, match="Meal with name 'eggs' already exists."):
@@ -132,25 +132,25 @@ def test_delete_meal(mock_cursor):
     assert actual_select_args == expected_args
     assert actual_update_args == expected_args
 
-def test_delete_song_bad_id(mock_cursor):
+def test_delete_meal_bad_id(mock_cursor):
     ######################## CHECK ########################
-    """Test error when trying to delete a non-existent song."""
+    """Test error when trying to delete a non-existent meal."""
 
-    # Simulate that no song exists with the given ID
+    # Simulate that no meal exists with the given ID
     mock_cursor.fetchone.return_value = None
 
-    # Expect a ValueError when attempting to delete a non-existent song
+    # Expect a ValueError when attempting to delete a non-existent meal
     with pytest.raises(ValueError, match="Meal with ID 999 not found"):
         delete_meal(999)
 
-def test_delete_song_already_deleted(mock_cursor):
+def test_delete_meal_already_deleted(mock_cursor):
     ######################## CHECK ########################
-    """Test error when trying to delete a song that's already marked as deleted."""
+    """Test error when trying to delete a meal that's already marked as deleted."""
 
-    # Simulate that the song exists but is already marked as deleted
+    # Simulate that the meal exists but is already marked as deleted
     mock_cursor.fetchone.return_value = ([True])
 
-    # Expect a ValueError when attempting to delete a song that's already been deleted
+    # Expect a ValueError when attempting to delete a meal that's already been deleted
     with pytest.raises(ValueError, match="Meal with ID 999 has already been deleted"):
         delete_meal(999)
 
@@ -181,6 +181,22 @@ def test_get_meal_by_id(mock_cursor):
     assert actual_query == expected_query, "The SQL query did not match the expected structure."
     assert mock_cursor.execute.call_args[0][1] == (1,)
 
+def test_get_meal_by_id_bad_id(mock_cursor):
+    ######################## CHECK ########################
+    """Test error when trying to delete a non-existent song."""
+    # Simulate that no meal exists for the given ID
+    mock_cursor.fetchone.return_value = None
+
+    # Expect a ValueError when the meal is not found
+    with pytest.raises(ValueError, match="Meal with ID 999 not found"):
+        get_meal_by_id(999)
+
+def test_get_meal_by_name():
+    pass
+
+def test_get_leaderboard():
+    pass
+
 
 ######################################################
 #
@@ -204,3 +220,6 @@ def test_clear_meals(mock_cursor, mocker):
 
     # Verify that the correct SQL script was executed
     mock_cursor.executescript.assert_called_once()
+
+def test_update_meal_stats():
+    pass
