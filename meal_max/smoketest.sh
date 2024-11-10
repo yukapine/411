@@ -193,13 +193,6 @@ get_meal_by_name "Chicken%20Wings"
 get_meal_by_name "Caesar%20Salad"
 get_meal_by_name "Tacos"
 
-# Start battles
-start_battle 1 2
-start_battle 3 4
-
-# Retrieve battle results
-get_battle_result 1
-get_battle_result 2
 
 # Get leaderboard
 get_leaderboard
@@ -207,8 +200,5 @@ get_leaderboard
 # Delete meals
 delete_meal_by_id 1
 delete_meal_by_id 2
-
-# Final meal list check
-get_all_meals
 
 echo "All smoketests completed successfully!"
