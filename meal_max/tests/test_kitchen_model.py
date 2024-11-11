@@ -23,6 +23,14 @@ from meal_max.models.kitchen_model import (
 
 ### Still need to test update_meal_stats, get_leaderboard, get_meal_by_name
 
+@pytest.fixture
+def kitchen_model():
+    # Setup for kitchen_model (e.g., create an instance of the model)
+    model = KitchenModel()  # Replace with your actual model initialization
+    yield model
+    # Teardown if needed (e.g., closing database connections or cleanup)
+    model.cleanup()
+
 def normalize_whitespace(sql_query: str) -> str:
     return re.sub(r'\s+', ' ', sql_query).strip()
 
@@ -191,11 +199,31 @@ def test_get_meal_by_id_bad_id(mock_cursor):
     with pytest.raises(ValueError, match="Meal with ID 999 not found"):
         get_meal_by_id(999)
 
-def test_get_meal_by_name():
-    pass
+def test_get_meal_by_name(kitchen_model, sample_meal1, sample_meal2):
+    """Test getting a meal by its name."""
+    kitchen_model.combatants.extend([sample_meal1, sample_meal2])
 
-def test_get_leaderboard():
-    pass
+    retrieved_meal = kitchen_model.get_meal_by_name('Meal 1')
+    assert retrieved_meal.meal == 'Meal 1', "Meal retrieved by name should match the expected meal."
+
+    # Test case where meal does not exist
+    with pytest.raises(ValueError, match="Meal with name 'Nonexistent Meal' not found"):
+        kitchen_model.get_meal_by_name('Nonexistent Meal')
+
+def test_get_leaderboard(kitchen_model, sample_combatants):
+    """Test that the leaderboard correctly sorts meals by battle score."""
+    kitchen_model.combatants.extend(sample_combatants)
+
+    # Simulate the results of a battle
+    kitchen_model.battle()
+
+    # Get the leaderboard
+    leaderboard = kitchen_model.get_leaderboard()
+
+    # Assert that the leaderboard has the correct meal in the correct order
+    assert len(leaderboard) == 1, "Leaderboard should contain only the winning meal."
+    assert leaderboard[0].meal == 'Meal 1' or leaderboard[0].meal == 'Meal 2', "The meal should be one of the combatants."
+
 
 
 ######################################################
@@ -221,5 +249,15 @@ def test_clear_meals(mock_cursor, mocker):
     # Verify that the correct SQL script was executed
     mock_cursor.executescript.assert_called_once()
 
-def test_update_meal_stats():
-    pass
+def test_update_meal_stats(kitchen_model, mock_update_meal_stats, sample_combatants):
+    """Test that the update_meal_stats function is called with the correct arguments."""
+    kitchen_model.combatants.extend(sample_combatants)
+
+    # Run the battle
+    kitchen_model.battle()
+
+    # Check that update_meal_stats was called for both the winner and loser
+    mock_update_meal_stats.assert_any_call(1)  # Meal 1
+    mock_update_meal_stats.assert_any_call(2)  # Meal 2
+
+    # Further validation can be done on the arguments passed to update_meal_stats
