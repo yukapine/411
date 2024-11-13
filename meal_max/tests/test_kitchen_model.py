@@ -62,7 +62,6 @@ def mock_cursor(mocker):
 ######################################################
 
 def test_create_meal(mock_cursor):
-    ######################## CHECK ########################
     """Test creating a new meal in the database."""
 
     # Call the function to add a new meal
@@ -86,7 +85,6 @@ def test_create_meal(mock_cursor):
     assert actual_arguments == expected_arguments, f"Expected {expected_arguments}, got {actual_arguments}."
 
 def test_create_meal_duplicate(mock_cursor):
-    ######################## CHECK ########################
     """Test creating a meal with a duplicate name (should raise an error)."""
 
      # Simulate that the database will raise an IntegrityError due to a duplicate entry
@@ -97,7 +95,6 @@ def test_create_meal_duplicate(mock_cursor):
         create_meal(meal="eggs", cuisine='diner', price=10.0, difficulty='HIGH')
 
 def test_create_meal_negative_price():
-    ######################## CHECK ########################
     """Test error when trying to create a meal with an invalid price."""
 
     # Attempt to add a meal with a negative price
@@ -106,7 +103,6 @@ def test_create_meal_negative_price():
 
 
 def test_create_meal_invalid_difficulty():
-    ######################## CHECK ########################
     """Test error when trying to create a meal with an invalid difficulty."""
 
     # Attempt to add a meal with a invalid difficulty
@@ -114,7 +110,6 @@ def test_create_meal_invalid_difficulty():
         create_meal(meal="Pasta", cuisine="Italian", price=10.0, difficulty="invalid")
 
 def test_delete_meal(mock_cursor):
-    ######################## CHECK ########################
     """Test soft deleting a meal from the database by meal ID."""
 
     # Simulate that the meal exists (id = 1)
@@ -141,7 +136,6 @@ def test_delete_meal(mock_cursor):
     assert actual_update_args == expected_args
 
 def test_delete_meal_bad_id(mock_cursor):
-    ######################## CHECK ########################
     """Test error when trying to delete a non-existent meal."""
 
     # Simulate that no meal exists with the given ID
@@ -152,7 +146,6 @@ def test_delete_meal_bad_id(mock_cursor):
         delete_meal(999)
 
 def test_delete_meal_already_deleted(mock_cursor):
-    ######################## CHECK ########################
     """Test error when trying to delete a meal that's already marked as deleted."""
 
     # Simulate that the meal exists but is already marked as deleted
@@ -169,11 +162,10 @@ def test_delete_meal_already_deleted(mock_cursor):
 ######################################################
 
 def test_get_meal_by_id(mock_cursor):
-    ######################## CHECK ########################
     """Test retrieving a meal by ID."""
 
     # Simulate that the meal exists (id = 1)
-    mock_cursor.fetchone.return_value = (1, "Pasta", "Italian", 10.0, 'LOW')
+    mock_cursor.fetchone.return_value = (1, "Pasta", "Italian", 10.0, 'LOW', False)
 
     # Call the function and check the result
     result = get_meal_by_id(1)
@@ -183,14 +175,13 @@ def test_get_meal_by_id(mock_cursor):
 
     assert result == expected_result
 
-    expected_query = normalize_whitespace("SELECT id, meal, cuisine, price, difficulty deleted FROM meals WHERE id = ?")
+    expected_query = normalize_whitespace("SELECT id, meal, cuisine, price, difficulty, deleted FROM meals WHERE id = ?")
     actual_query = normalize_whitespace(mock_cursor.execute.call_args[0][0])
 
     assert actual_query == expected_query, "The SQL query did not match the expected structure."
     assert mock_cursor.execute.call_args[0][1] == (1,)
 
 def test_get_meal_by_id_bad_id(mock_cursor):
-    ######################## CHECK ########################
     """Test error when trying to delete a non-existent song."""
     # Simulate that no meal exists for the given ID
     mock_cursor.fetchone.return_value = None
@@ -202,7 +193,7 @@ def test_get_meal_by_id_bad_id(mock_cursor):
 def test_get_meal_by_name(mock_cursor):
     """Test getting a meal by its name."""
     # Simulate that the song exists (meal = "Pasta", cuisine = "Italian", price = 15.0, difficulty = "HIGH")
-    mock_cursor.fetchone.return_value = (1, "Pasta", "Italian", 15.0, "HIGH")
+    mock_cursor.fetchone.return_value = (1, "Pasta", "Italian", 15.0, "HIGH", False)
 
     # Call the function and check the result
     result = get_meal_by_name("Pasta")
@@ -224,7 +215,7 @@ def test_get_meal_by_name(mock_cursor):
     actual_arguments = mock_cursor.execute.call_args[0][1]
 
     # Assert that the SQL query was executed with the correct arguments
-    expected_arguments = ("Meal")
+    expected_arguments = ('Pasta',)
     assert actual_arguments == expected_arguments, f"The SQL query arguments did not match. Expected {expected_arguments}, got {actual_arguments}."
 
 def test_get_leaderboard(mock_cursor):
@@ -273,7 +264,6 @@ def test_get_leaderboard(mock_cursor):
 ######################################################
 
 def test_clear_meals(mock_cursor, mocker):
-    ######################## CHECK ########################
     """Test clearing the entire meal database."""
 
     # Mock the SQL file reading

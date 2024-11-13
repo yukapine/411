@@ -3,8 +3,6 @@ import pytest
 from meal_max.models.battle_model import BattleModel
 from meal_max.models.battle_model import Meal
 
-### Need to add tests for battle()
-
 @pytest.fixture()
 def battle_model():
     """Fixture to provide a new instance of BattleModel for each test."""
@@ -34,7 +32,6 @@ def sample_combatants(sample_meal1, sample_meal2):
 ##################################################
 
 def test_add_meal_to_combatants(battle_model, sample_meal1):
-    ######################## CHECK ########################
     """Test adding a meal to the combatants list."""
     battle_model.prep_combatant(sample_meal1)
     assert len(battle_model.combatants) == 1
@@ -53,7 +50,6 @@ def test_add_meal_to_full_list(battle_model, sample_meal1):
 ##################################################
 
 def test_clear_combatants(battle_model, sample_meal1):
-    ######################## CHECK ########################
     """Test clearing the entire combatant list."""
     battle_model.prep_combatant(sample_meal1)
     battle_model.clear_combatants()
@@ -65,7 +61,6 @@ def test_clear_combatants(battle_model, sample_meal1):
 
 
 def test_get_combatants(battle_model, sample_combatants):
-    ######################## CHECK ########################
     """Test successfully retrieving all meals from the combatants list."""
     battle_model.combatants.extend(sample_combatants)
 
@@ -75,7 +70,6 @@ def test_get_combatants(battle_model, sample_combatants):
     assert all_meals[1].id == 2
 
 def test_get_battle_score(battle_model, sample_meal1):
-    ######################## CHECK ########################
     """Test getting the battle score of a combatant."""
     assert battle_model.get_battle_score(sample_meal1) == 87, "Expected battle score"
 
