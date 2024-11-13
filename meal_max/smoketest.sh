@@ -134,13 +134,41 @@ get_meal_by_name() {
   fi
 }
 
-
 ############################################################
 #
 # Battle Management
 #
 ############################################################
 
+prep_combatant () {
+  meal_id=$1
+  echo "Preparing combatant with Meal ID ($meal_id)..." 
+  response=$(curl -s -x POST "$BASE_URL/prep-combatant/$meal_id") 
+  if echo "response" | grep -q '"status": "success"'; then 
+    echo "Combatant prepared successfully." 
+  else
+    exit 1
+    echo "Failed to prepare combatant."
+  fi
+}
+
+battle() {
+  prep_combatant "meal1"
+  prep_combatant "meal2"
+
+  echo "Starting battle..."
+  response=$(curl -s -X POST "$BASE_URL/battle") 
+  if echo "response" | grep -q '"status": "success"'; then 
+    echo "Battle completed successfully."
+    if I "$ECHO_JSON" = true 1; then
+      echo "Battle Result JSON:"
+      echo "$response" | ja .
+    fi 
+  else
+    echo "Failed to start battle."
+    exit 1
+  fi
+}
 
 ##########################################################
 #
@@ -193,6 +221,9 @@ get_meal_by_name "Chicken%20Wings"
 get_meal_by_name "Caesar%20Salad"
 get_meal_by_name "Tacos"
 
+# Run Battle
+
+battle
 
 # Get leaderboard
 get_leaderboard

@@ -46,7 +46,7 @@ def mock_cursor(mocker):
     mock_cursor.fetchall.return_value = []
     mock_conn.commit.return_value = None
 
-    # Mock the get_db_connection context manager from sql_utils
+    # Mock the get_db_connection context manager from sql_utils 
     @contextmanager
     def mock_get_db_connection():
         yield mock_conn  # Yield the mocked connection object
