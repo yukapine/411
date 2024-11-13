@@ -52,11 +52,11 @@ def test_add_meal_to_full_list(battle_model, sample_meal1):
 # Remove Meal Management Test Cases
 ##################################################
 
-def test_clear_meals(battle_model):
+def test_clear_combatants(battle_model, sample_meal1):
     ######################## CHECK ########################
     """Test clearing the entire combatant list."""
     battle_model.prep_combatant(sample_meal1)
-    battle_model.clear_meals()
+    battle_model.clear_combatants()
     assert len(battle_model.combatants) == 0, "combatant list should be empty after clearing"
 
 ##################################################
@@ -74,11 +74,10 @@ def test_get_combatants(battle_model, sample_combatants):
     assert all_meals[0].id == 1
     assert all_meals[1].id == 2
 
-def test_get_battle_score(battle_model, sample_meal):
+def test_get_battle_score(battle_model, sample_meal1):
     ######################## CHECK ########################
     """Test getting the battle score of a combatant."""
-    battle_model.combatants.extend(sample_meal)
-    assert battle_model.get_battle_score() == 87, "Expected battle score"
+    assert battle_model.get_battle_score(sample_meal1) == 87, "Expected battle score"
 
 
 ##################################################
@@ -96,8 +95,8 @@ def test_battle(battle_model, sample_combatants, mock_update_meal_stats):
     assert len(battle_model.combatants) == 1, "There should be exactly 1 remaining combatant after the battle."
 
     # Assert that update_meal_stats was called with the correct meal IDs
-    mock_update_meal_stats.assert_any_call(1)  # Meal with ID 1
-    mock_update_meal_stats.assert_any_call(2)  # Meal with ID 2
+    mock_update_meal_stats.assert_any_call(2, 'win')  # Meal with ID 1 and result 'win'
+    mock_update_meal_stats.assert_any_call(1, 'loss')  # Meal with ID 2 and result 'loss'
 
     # Check that the combatants are updated correctly based on the battle
     winner = battle_model.combatants[0]
